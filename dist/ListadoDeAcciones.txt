@@ -1,0 +1,9 @@
+
+AAPL
+XOM
+CRM
+JPM
+WMT
+IBM
+AMZN
+
