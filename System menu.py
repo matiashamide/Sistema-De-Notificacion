@@ -1,7 +1,7 @@
 import time
 import datetime as dt
 
-import logicaDeNegocio
+import AutoRun
 
 def traerContenidoALista():
     f = open("ListadoDeAcciones.txt")
