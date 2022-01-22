@@ -55,7 +55,7 @@ def simular():
     end = dt.datetime.strptime(end_str, '%d/%m/%Y').date()
 
 
-    logicaDeNegocio.ChequearAcciones(start , end)
+    AutoRun.ChequearAcciones(start , end)
 
 
 
