@@ -1,7 +1,7 @@
 import time
 import datetime as dt
-
-import AutoRun
+import sys, os
+import AutoRun 
 
 def traerContenidoALista():
     f = open("ListadoDeAcciones.txt")
@@ -54,9 +54,12 @@ def simular():
     end_str= input()
     end = dt.datetime.strptime(end_str, '%d/%m/%Y').date()
 
-
-    AutoRun.ChequearAcciones(start , end)
-
+    try:
+        AutoRun.ChequearAcciones(start , end)
+    except:
+        print("intente con fechas validas")
+        time.sleep(3)
+        os.execl(sys.executable, os.path.abspath(__file__), *sys.argv) 
 
 
 def default():

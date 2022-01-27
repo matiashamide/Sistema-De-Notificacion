@@ -3,26 +3,37 @@ import datetime as dt
 from math import sqrt
 from pandas_datareader import data as pdr
 from notifypy import Notify
+import numpy as np
+from scipy import optimize
 
-cantDias = 250
+
+cantDias = 365
+cantDiasBursatiles = 253
+listaDeAccionesAlertas = []
 
 def mediaMovil( accion , cantDias , df):
     precioSpot = df.Close
     return precioSpot.rolling(cantDias).mean()[accion]
 
-def notificar(accion , mensaje):
+def notificar(accion , mensaje , i):
     notificacion = Notify()
-    notificacion.title = accion
+    notificacion.title = accion + "   ---> cumple " + str(i)
     notificacion.message = mensaje
     notificacion.send()
 
-def ChequearAcciones( start  , end ):
+def ChequearAcciones( start , end ):
+    
+    
     arc_acciones = open("ListadoDeAcciones.txt")
     listaDeAcciones = arc_acciones.read().split()
-
+    
     df = pdr.get_data_yahoo(listaDeAcciones , start , end)
-
+    
+    global cantDiasBursatiles
+    cantDiasBursatiles = len(df)
+    
     #spy = pdr.DataReader('SPY','yahoo', start, end)
+    
     cuerpo = ""
     
     for accion in listaDeAcciones:
@@ -30,30 +41,31 @@ def ChequearAcciones( start  , end ):
         i = 0
 
         if(ValidacionDeRetorno(accion , df )):
-            cuerpo += "- Kurt y Asimetria OK - \n"
+            cuerpo += "-Kurt y Asimetria OK- "
             i += 1
         if(RSI(accion , df)):
-            cuerpo += "- RSI entre 40 y 70 - \n"
+            cuerpo += "-RSI entre 40 y 70- "
             i += 1
         if (margenInferior(accion , df) > 0):
-            cuerpo += "- margen inferio POSITIVO - \n"
+            cuerpo += "-margen inferio POSITIVO- "
             i += 1 
         if (testDeHipotesis(accion , df) > 1.28):
-            cuerpo += "- Rechaza h0 - \n"
+            cuerpo += "-Rechaza h0- "
             i += 1
         if (mediaMovil( accion ,50 , df).iloc[-1] > mediaMovil(accion , 200 , df).iloc[-1]):
-            cuerpo += "- MA50 > MA200 - \n"
+            cuerpo += "-MA50 > MA200- "
             i += 1
         if (df.Close[accion].iloc[-1] > mediaMovil(accion , 50 , df).iloc[-1]):
-            cuerpo += "- Spot > MA50  - \n"
+            cuerpo += "-Spot > MA50- "
             i += 1 
 
-
         if i > 3 :
-            notificar(accion , cuerpo)
-            print(accion)
+            notificar(accion , cuerpo , i)
+            listaDeAccionesAlertas.append(accion)
 
-        cuerpo = ""    
+        cuerpo = ""   
+
+    print(listaDeAccionesAlertas) 
             
 
 def RatioSharp(accion , spy , df):
@@ -77,10 +89,10 @@ def desvio(accion , df):
     return df.Close[accion].pct_change().std(ddof=1)
 
 def margenInferior(accion , df):
-    return df.Close[accion].pct_change().mean() - 1.68 * desvio(accion , df) / sqrt(cantDias)
+    return df.Close[accion].pct_change().mean() - 1.68 * desvio(accion , df) / sqrt(cantDiasBursatiles)
 
 def testDeHipotesis(accion , df):
-    return df.Close[accion].pct_change().mean() / (desvio(accion , df) / sqrt(cantDias))
+    return df.Close[accion].pct_change().mean() / (desvio(accion , df) / sqrt(cantDiasBursatiles))
 
 def RSI(accion , df):
     
@@ -98,3 +110,21 @@ end = dt.datetime.now()
 start = end - dt.timedelta(days = cantDias)
 
 ChequearAcciones( start , end )
+
+
+#PARTE 2 
+
+def objective():
+    return MatrizDePonderacion()  * MatrizCovar() * MatrizTranspuesta()
+
+def MatrizCovar():
+
+    matriz = []
+
+    for i in ( 0 , len(listaDeAccionesAlertas)):
+        matriz[i].add([])
+
+    return matriz
+
+def MatrizDePonderacion():
+    a = 2
