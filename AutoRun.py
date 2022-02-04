@@ -4,12 +4,11 @@ from math import sqrt
 from pandas_datareader import data as pdr
 from notifypy import Notify
 import numpy as np
-from scipy import optimize
-
+from scipy.optimize import minimize
 
 cantDias = 365
 cantDiasBursatiles = 253
-listaDeAccionesAlertas = []
+ListaDeAccionesAlertas = []
 
 def mediaMovil( accion , cantDias , df):
     precioSpot = df.Close
@@ -21,12 +20,15 @@ def notificar(accion , mensaje , i):
     notificacion.message = mensaje
     notificacion.send()
 
+df = None 
+
 def ChequearAcciones( start , end ):
     
     
     arc_acciones = open("ListadoDeAcciones.txt")
     listaDeAcciones = arc_acciones.read().split()
     
+    global df 
     df = pdr.get_data_yahoo(listaDeAcciones , start , end)
     
     global cantDiasBursatiles
@@ -61,11 +63,11 @@ def ChequearAcciones( start , end ):
 
         if i > 3 :
             notificar(accion , cuerpo , i)
-            listaDeAccionesAlertas.append(accion)
+            ListaDeAccionesAlertas.append(accion)
 
         cuerpo = ""   
 
-    print(listaDeAccionesAlertas) 
+    print(ListaDeAccionesAlertas) 
             
 
 def RatioSharp(accion , spy , df):
@@ -108,23 +110,8 @@ def RSI(accion , df):
 
 end = dt.datetime.now()
 start = end - dt.timedelta(days = cantDias)
-
 ChequearAcciones( start , end )
 
-
-#PARTE 2 
-
-def objective():
-    return MatrizDePonderacion()  * MatrizCovar() * MatrizTranspuesta()
-
-def MatrizCovar():
-
-    matriz = []
-
-    for i in ( 0 , len(listaDeAccionesAlertas)):
-        matriz[i].add([])
-
-    return matriz
-
-def MatrizDePonderacion():
-    a = 2
+'''fechaDeInicioDeprueba = dt.datetime(2021, 1, 29, 18, 00)
+fechaDeCierreDeprueba =  dt.datetime(2022, 1, 29, 18, 00)
+ChequearAcciones( fechaDeInicioDeprueba , fechaDeCierreDeprueba )'''

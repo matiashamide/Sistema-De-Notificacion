@@ -1,7 +1,8 @@
 import time
 import datetime as dt
 import sys, os
-import AutoRun 
+
+from scipy.optimize import minimize
 
 def traerContenidoALista():
     f = open("ListadoDeAcciones.txt")
@@ -46,6 +47,7 @@ def listarAcciones():
     print("----")
 
 def simular():
+    import AutoRun 
 
     print("ingrese la fecha de inicio en formato dd/mm/yyyy")
     start_str = input()
@@ -61,6 +63,25 @@ def simular():
         time.sleep(3)
         os.execl(sys.executable, os.path.abspath(__file__), *sys.argv) 
 
+        
+
+def optimizacion():
+    from optimizacion import optimizar
+
+    print("----------- Optimizacion -----------")
+    print("1. maximizar el ratio sharp ")
+    print("2. minimizar la varianza")
+    option = input()
+    intOpt = int(option)
+
+    print("ingrese los tickers de las acciones que desea optimizar                    un ejemplo de input: AAPL KO AMZN")
+    tickers = input()
+    accionesElectas = tickers.split()
+
+    print("-----------------------------------")
+    optimizar(accionesElectas , intOpt)
+    print("-----------------------------------")
+
 
 def default():
    return "Opcion Invalida"
@@ -71,6 +92,7 @@ def menu():
     print("2. Eliminar accion")
     print("3. Ver listado de acciones")
     print("4. Simular el programa dada una fecha")
+    print("5. Optimizar ")
     print("0. Finalizar programa")
     print("-----------------------------------")
 
@@ -94,6 +116,8 @@ def switch(accion):
 
     elif accion == 4:
         simular()
+    elif accion == 5:
+        optimizacion()
     else:
         print("opcion invalida")
         return -1
@@ -103,3 +127,4 @@ while 1:
     menu()
     accion = int(input())
     switch(accion)
+
