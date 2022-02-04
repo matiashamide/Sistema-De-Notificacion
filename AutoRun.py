@@ -54,8 +54,8 @@ def ChequearAcciones( start , end ):
         if (testDeHipotesis(accion , df) > 1.28):
             cuerpo += "-Rechaza h0- "
             i += 1
-        if (mediaMovil( accion ,50 , df).iloc[-1] > mediaMovil(accion , 200 , df).iloc[-1]):
-            cuerpo += "-MA50 > MA200- "
+        if (mediaMovil( accion ,50 , df).iloc[-1] > mediaMovil(accion , 100 , df).iloc[-1]):
+            cuerpo += "-MA50 > MA100- "
             i += 1
         if (df.Close[accion].iloc[-1] > mediaMovil(accion , 50 , df).iloc[-1]):
             cuerpo += "-Spot > MA50- "
@@ -112,6 +112,4 @@ end = dt.datetime.now()
 start = end - dt.timedelta(days = cantDias)
 ChequearAcciones( start , end )
 
-'''fechaDeInicioDeprueba = dt.datetime(2021, 1, 29, 18, 00)
-fechaDeCierreDeprueba =  dt.datetime(2022, 1, 29, 18, 00)
-ChequearAcciones( fechaDeInicioDeprueba , fechaDeCierreDeprueba )'''
+
