@@ -47,7 +47,7 @@ def listarAcciones():
     print("----")
 
 def simular():
-    import AutoRun 
+    
 
     print("ingrese la fecha de inicio en formato dd/mm/yyyy")
     start_str = input()
@@ -57,7 +57,8 @@ def simular():
     end = dt.datetime.strptime(end_str, '%d/%m/%Y').date()
 
     try:
-        AutoRun.ChequearAcciones(start , end)
+        from AutoRun import ChequearAcciones
+        ChequearAcciones(start , end)
     except:
         print("intente con fechas validas")
         time.sleep(3)
