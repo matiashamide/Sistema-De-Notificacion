@@ -5,6 +5,7 @@ from pandas_datareader import data as pdr
 from notifypy import Notify
 import numpy as np
 from scipy.optimize import minimize
+import yfinance as yfin
 
 cantDias = 365
 cantDiasBursatiles = 253
@@ -24,11 +25,11 @@ df = None
 
 def ChequearAcciones( start , end ):
     
-    
     arc_acciones = open("ListadoDeAcciones.txt")
     listaDeAcciones = arc_acciones.read().split()
     
     global df 
+    yfin.pdr_override()
     df = pdr.get_data_yahoo(listaDeAcciones , start , end)
     
     global cantDiasBursatiles
@@ -85,7 +86,7 @@ def RatioSharp(accion , spy , df):
     return rSharp > rSharpSpy
 
 def ValidacionDeRetorno(accion , df):
-    return (df.Close[accion].pct_change().skew(skipna = 1) < 0) & (df.Close[accion].pct_change().kurtosis(skipna = 1) > 0) 
+    return (df.Close[accion].pct_change().skew(skipna = True) < 0) & (df.Close[accion].pct_change().kurtosis(skipna = True) > 0) 
             
 def desvio(accion , df): 
     return df.Close[accion].pct_change().std(ddof=1)
